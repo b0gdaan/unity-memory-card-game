@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Card Game — Unity</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; }
+    .hero { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 80px 24px; text-align: center; border-bottom: 1px solid #334155; }
+    .hero .tag { display: inline-block; background: #7c3aed20; color: #a78bfa; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 20px; border: 1px solid #7c3aed40; }
+    .hero h1 { font-size: 48px; font-weight: 800; background: linear-gradient(135deg, #a78bfa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 16px; }
+    .hero p { font-size: 18px; color: #94a3b8; max-width: 500px; margin: 0 auto 36px; line-height: 1.6; }
+    .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary { padding: 14px 32px; background: #7c3aed; color: white; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 15px; transition: background .2s; }
+    .btn-primary:hover { background: #6d28d9; }
+    .btn-secondary { padding: 14px 32px; background: transparent; color: #94a3b8; border: 1px solid #334155; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; transition: all .2s; }
+    .btn-secondary:hover { border-color: #7c3aed; color: #a78bfa; }
+    .grid-demo { max-width: 400px; margin: 40px auto; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+    .card-demo { aspect-ratio: 1; background: #1e293b; border-radius: 6px; border: 1px solid #334155; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all .3s; }
+    .card-demo.flipped { background: #4c1d95; border-color: #7c3aed; }
+    .card-demo:hover { border-color: #7c3aed; transform: scale(1.05); }
+    .section { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
+    .section h2 { font-size: 28px; font-weight: 700; margin-bottom: 32px; color: #f1f5f9; }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+    .feature { background: #1e293b; border-radius: 12px; padding: 24px; border: 1px solid #334155; }
+    .feature .icon { font-size: 32px; margin-bottom: 12px; }
+    .feature h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .feature p { font-size: 14px; color: #64748b; line-height: 1.5; }
+    .code-section { background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden; }
+    .code-tab { display: flex; border-bottom: 1px solid #334155; }
+    .tab { padding: 10px 20px; font-size: 13px; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; }
+    .tab.active { color: #a78bfa; border-bottom-color: #7c3aed; }
+    pre { padding: 24px; font-size: 13px; color: #94a3b8; overflow-x: auto; font-family: 'Consolas', monospace; line-height: 1.6; }
+    .kw { color: #a78bfa; } .cl { color: #38bdf8; } .fn { color: #4ade80; } .cm { color: #475569; }
+    footer { text-align: center; padding: 40px; color: #475569; font-size: 14px; border-top: 1px solid #1e293b; }
+    footer a { color: #7c3aed; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="tag">🎮 Unity · C# · University Project</div>
+    <h1>Memory Card Game</h1>
+    <p>A 6×6 card matching game built in Unity. Find all pairs, track your score, and beat your attempts record.</p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="https://github.com/b0gdaan/unity-memory-card-game">View Source on GitHub</a>
+      <a class="btn-secondary" href="https://github.com/b0gdaan/unity-memory-card-game/blob/main/seminar_paper.pdf">Read Paper (PDF)</a>
+    </div>
+    <div class="grid-demo" id="demoGrid"></div>
+  </div>
+
+  <div class="section">
+    <h2>How It Works</h2>
+    <div class="features">
+      <div class="feature"><div class="icon">🃏</div><h3>6×6 Grid</h3><p>36 cards with 4 unique image pairs, randomly shuffled each game using Fisher-Yates algorithm.</p></div>
+      <div class="feature"><div class="icon">🔍</div><h3>Pair Matching</h3><p>Click to reveal a card. Find its matching pair. Mismatches flip back after 0.5s delay via Coroutine.</p></div>
+      <div class="feature"><div class="icon">🏆</div><h3>Score Tracking</h3><p>Score increments for each matched pair. Total attempts counted. Both displayed via TextMesh.</p></div>
+      <div class="feature"><div class="icon">🔄</div><h3>Instant Restart</h3><p>Restart button reloads the scene, reshuffles cards and resets all counters instantly.</p></div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top:0">
+    <h2>Core Scripts</h2>
+    <div class="code-section">
+      <div class="code-tab">
+        <div class="tab active">GameControllerScript.cs</div>
+      </div>
+      <pre><span class="cm">// Fisher-Yates shuffle for random card placement</span>
+<span class="kw">private</span> <span class="kw">int</span>[] <span class="fn">Randomiser</span>(<span class="kw">int</span>[] locations) {
+    <span class="kw">int</span>[] array = locations.<span class="fn">Clone</span>() <span class="kw">as int</span>[];
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="cl">0</span>; i &lt; array.Length; i++) {
+        <span class="kw">int</span> j = Random.<span class="fn">Range</span>(i, array.Length);
+        (array[i], array[j]) = (array[j], array[i]);
+    }
+    <span class="kw">return</span> array;
+}
+
+<span class="cm">// Coroutine-based match checking</span>
+<span class="kw">private</span> IEnumerator <span class="fn">CheckGuessed</span>() {
+    <span class="kw">if</span> (firstOpen.spriteId == secondOpen.spriteId) {
+        score++;
+        scoreText.text = <span class="cl">"Score: "</span> + score;
+    } <span class="kw">else</span> {
+        <span class="kw">yield return new</span> <span class="fn">WaitForSeconds</span>(<span class="cl">0.5f</span>);
+        firstOpen.<span class="fn">Close</span>();
+        secondOpen.<span class="fn">Close</span>();
+    }
+    attempts++;
+    attemptsText.text = <span class="cl">"Attempts: "</span> + attempts;
+}</pre>
+    </div>
+  </div>
+
+  <footer>
+    University of Kragujevac · Virtual Reality Systems · 2024 ·
+    <a href="https://github.com/b0gdaan/unity-memory-card-game">github.com/b0gdaan/unity-memory-card-game</a>
+  </footer>
+
+  <script>
+    const emojis = ['🌟','🔥','💎','🚀','🌊','🎯','🦊','🌸'];
+    const cards = [0,0,1,1,2,2,3,3].sort(()=>Math.random()-.5);
+    const grid = document.getElementById('demoGrid');
+    let first=null, lock=false;
+    for(let i=0;i<8;i++){
+      const c=document.createElement('div');
+      c.className='card-demo'; c.textContent='?'; c.dataset.id=cards[i];
+      c.onclick=function(){
+        if(lock||this.classList.contains('flipped'))return;
+        this.textContent=emojis[this.dataset.id]; this.classList.add('flipped');
+        if(!first){first=this;}else{
+          lock=true;
+          if(first.dataset.id===this.dataset.id){first=null;lock=false;}
+          else{const a=first,b=this;setTimeout(()=>{a.textContent='?';a.classList.remove('flipped');b.textContent='?';b.classList.remove('flipped');first=null;lock=false;},600);}
+        }
+      };
+      grid.appendChild(c);
+    }
+  </script>
+</body>
+</html>
