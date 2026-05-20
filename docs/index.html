@@ -3,118 +3,284 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Memory Card Game — Unity</title>
+  <title>Memory Card Game — Unity C#</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; }
-    .hero { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 80px 24px; text-align: center; border-bottom: 1px solid #334155; }
-    .hero .tag { display: inline-block; background: #7c3aed20; color: #a78bfa; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 20px; border: 1px solid #7c3aed40; }
-    .hero h1 { font-size: 48px; font-weight: 800; background: linear-gradient(135deg, #a78bfa, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 16px; }
-    .hero p { font-size: 18px; color: #94a3b8; max-width: 500px; margin: 0 auto 36px; line-height: 1.6; }
-    .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-    .btn-primary { padding: 14px 32px; background: #7c3aed; color: white; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 15px; transition: background .2s; }
-    .btn-primary:hover { background: #6d28d9; }
-    .btn-secondary { padding: 14px 32px; background: transparent; color: #94a3b8; border: 1px solid #334155; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 15px; transition: all .2s; }
-    .btn-secondary:hover { border-color: #7c3aed; color: #a78bfa; }
-    .grid-demo { max-width: 400px; margin: 40px auto; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-    .card-demo { aspect-ratio: 1; background: #1e293b; border-radius: 6px; border: 1px solid #334155; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: all .3s; }
-    .card-demo.flipped { background: #4c1d95; border-color: #7c3aed; }
-    .card-demo:hover { border-color: #7c3aed; transform: scale(1.05); }
-    .section { max-width: 900px; margin: 0 auto; padding: 60px 24px; }
-    .section h2 { font-size: 28px; font-weight: 700; margin-bottom: 32px; color: #f1f5f9; }
-    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-    .feature { background: #1e293b; border-radius: 12px; padding: 24px; border: 1px solid #334155; }
-    .feature .icon { font-size: 32px; margin-bottom: 12px; }
-    .feature h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-    .feature p { font-size: 14px; color: #64748b; line-height: 1.5; }
-    .code-section { background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden; }
-    .code-tab { display: flex; border-bottom: 1px solid #334155; }
-    .tab { padding: 10px 20px; font-size: 13px; color: #64748b; cursor: pointer; border-bottom: 2px solid transparent; }
-    .tab.active { color: #a78bfa; border-bottom-color: #7c3aed; }
-    pre { padding: 24px; font-size: 13px; color: #94a3b8; overflow-x: auto; font-family: 'Consolas', monospace; line-height: 1.6; }
-    .kw { color: #a78bfa; } .cl { color: #38bdf8; } .fn { color: #4ade80; } .cm { color: #475569; }
-    footer { text-align: center; padding: 40px; color: #475569; font-size: 14px; border-top: 1px solid #1e293b; }
-    footer a { color: #7c3aed; text-decoration: none; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0d0d1a;--surface:#13132a;--card:#1a1a35;--border:#2a2a55;--accent:#7c3aed;--accent2:#a855f7;--glow:#c084fc;--text:#e8e0ff;--muted:#6b6b99}
+    html{scroll-behavior:smooth}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+    /* NAV */
+    nav{position:fixed;top:0;width:100%;z-index:100;padding:16px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(13,13,26,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .logo{font-size:18px;font-weight:800;background:linear-gradient(90deg,var(--glow),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .nav-links{display:flex;gap:24px}
+    .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;transition:color .2s}
+    .nav-links a:hover{color:var(--glow)}
+    .nav-gh{padding:8px 18px;border:1px solid var(--border);color:var(--text);border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;transition:border-color .2s}
+    .nav-gh:hover{border-color:var(--accent)}
+
+    /* HERO */
+    .hero{padding:120px 40px 80px;text-align:center;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(124,58,237,.18) 0%,transparent 70%);pointer-events:none}
+    .tag{display:inline-flex;align-items:center;gap:8px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);color:var(--accent2);padding:6px 18px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:24px}
+    h1{font-size:clamp(40px,7vw,80px);font-weight:900;line-height:1;letter-spacing:-2px;margin-bottom:20px}
+    h1 span{background:linear-gradient(135deg,#fff 0%,var(--glow) 60%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero-sub{font-size:17px;color:var(--muted);max-width:480px;margin:0 auto 44px;line-height:1.65}
+    .btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    .btn-p{padding:14px 30px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 0 40px rgba(124,58,237,.5);transition:box-shadow .2s}
+    .btn-p:hover{box-shadow:0 0 60px rgba(124,58,237,.7)}
+    .btn-s{padding:14px 30px;border:1px solid var(--border);color:var(--text);border-radius:10px;text-decoration:none;font-size:15px;transition:border-color .2s}
+    .btn-s:hover{border-color:var(--accent2)}
+
+    /* STATS */
+    .stats-row{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;padding:50px 40px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+    .stat{text-align:center}
+    .stat-v{font-size:36px;font-weight:900;color:var(--glow)}
+    .stat-l{font-size:12px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.08em}
+
+    /* PLAY SECTION */
+    .section{max-width:900px;margin:0 auto;padding:80px 40px}
+    .section-label{font-size:12px;color:var(--accent2);text-transform:uppercase;letter-spacing:.15em;font-weight:700;margin-bottom:10px}
+    .section-title{font-size:clamp(24px,4vw,38px);font-weight:800;margin-bottom:12px}
+    .section-desc{color:var(--muted);font-size:15px;line-height:1.65;max-width:560px}
+
+    /* GAME */
+    .game-wrap{margin-top:48px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px;display:flex;flex-direction:column;align-items:center;gap:24px}
+    .score-bar{display:flex;gap:32px;font-size:14px}
+    .score-item{text-align:center}
+    .score-item span{display:block;font-size:26px;font-weight:900;color:var(--glow);font-family:monospace}
+    .score-item small{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+    .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;width:100%;max-width:480px}
+    .gc{aspect-ratio:1;border-radius:10px;border:2px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:28px;user-select:none;transition:transform .15s,border-color .15s,background .15s;position:relative;overflow:hidden}
+    .gc::before{content:'?';font-size:22px;color:var(--muted);position:absolute;transition:opacity .2s}
+    .gc .emoji{position:absolute;font-size:28px;opacity:0;transition:opacity .2s}
+    .gc.revealed::before{opacity:0}
+    .gc.revealed .emoji{opacity:1}
+    .gc.revealed{border-color:var(--accent2);background:rgba(168,85,247,.15)}
+    .gc.matched{border-color:#4ade80;background:rgba(74,222,128,.12);cursor:default}
+    .gc.matched::before{opacity:0}
+    .gc.matched .emoji{opacity:1}
+    .gc:not(.matched):hover{transform:scale(1.06);border-color:var(--accent)}
+    .gc.shake{animation:shake .3s}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+    .restart-btn{padding:12px 28px;background:transparent;border:1px solid var(--border);color:var(--text);border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;transition:all .2s}
+    .restart-btn:hover{border-color:var(--accent2);color:var(--glow)}
+    .win-msg{font-size:18px;font-weight:800;color:var(--glow);animation:pop .4s}
+    @keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+
+    /* FEATURES */
+    .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:40px}
+    .feat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;transition:border-color .2s}
+    .feat:hover{border-color:var(--accent)}
+    .feat-icon{font-size:30px;margin-bottom:14px}
+    .feat h3{font-size:15px;font-weight:700;margin-bottom:6px}
+    .feat p{font-size:13px;color:var(--muted);line-height:1.5}
+
+    /* CODE */
+    .code-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:40px}
+    .code-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+    .code-dots{display:flex;gap:6px}
+    .code-dots span{width:12px;height:12px;border-radius:50%}
+    .code-title{font-size:13px;color:var(--muted);margin-left:8px;font-family:monospace}
+    pre{padding:24px;font-size:13px;line-height:1.7;font-family:'Consolas','Fira Code',monospace;overflow-x:auto;color:#c4b5fd}
+    .kw{color:#a78bfa}.cl{color:#7dd3fc}.fn{color:#86efac}.cm{color:#4b5563}.st{color:#fbbf24}.num{color:#fb923c}
+
+    footer{text-align:center;padding:48px 40px;border-top:1px solid var(--border);color:var(--muted);font-size:14px}
+    footer a{color:var(--accent2);text-decoration:none}
+
+    @media(max-width:600px){.nav-links{display:none}.grid{grid-template-columns:repeat(4,1fr)}.stats-row{gap:24px}}
   </style>
 </head>
 <body>
-  <div class="hero">
-    <div class="tag">🎮 Unity · C# · University Project</div>
-    <h1>Memory Card Game</h1>
-    <p>A 6×6 card matching game built in Unity. Find all pairs, track your score, and beat your attempts record.</p>
-    <div class="hero-btns">
-      <a class="btn-primary" href="https://github.com/b0gdaan/unity-memory-card-game">View Source on GitHub</a>
-      <a class="btn-secondary" href="https://github.com/b0gdaan/unity-memory-card-game/blob/main/seminar_paper.pdf">Read Paper (PDF)</a>
-    </div>
-    <div class="grid-demo" id="demoGrid"></div>
-  </div>
 
-  <div class="section">
-    <h2>How It Works</h2>
-    <div class="features">
-      <div class="feature"><div class="icon">🃏</div><h3>6×6 Grid</h3><p>36 cards with 4 unique image pairs, randomly shuffled each game using Fisher-Yates algorithm.</p></div>
-      <div class="feature"><div class="icon">🔍</div><h3>Pair Matching</h3><p>Click to reveal a card. Find its matching pair. Mismatches flip back after 0.5s delay via Coroutine.</p></div>
-      <div class="feature"><div class="icon">🏆</div><h3>Score Tracking</h3><p>Score increments for each matched pair. Total attempts counted. Both displayed via TextMesh.</p></div>
-      <div class="feature"><div class="icon">🔄</div><h3>Instant Restart</h3><p>Restart button reloads the scene, reshuffles cards and resets all counters instantly.</p></div>
-    </div>
+<nav>
+  <div class="logo">🃏 MemoryGame</div>
+  <div class="nav-links">
+    <a href="#play">Play</a>
+    <a href="#how">How It Works</a>
+    <a href="#code">Code</a>
   </div>
+  <a class="nav-gh" href="https://github.com/b0gdaan/unity-memory-card-game">GitHub ↗</a>
+</nav>
 
-  <div class="section" style="padding-top:0">
-    <h2>Core Scripts</h2>
-    <div class="code-section">
-      <div class="code-tab">
-        <div class="tab active">GameControllerScript.cs</div>
-      </div>
-      <pre><span class="cm">// Fisher-Yates shuffle for random card placement</span>
+<!-- HERO -->
+<div class="hero">
+  <div class="tag">🎮 Unity · C# · University of Kragujevac · 2024</div>
+  <h1><span>Memory Card</span><br>Game</h1>
+  <p class="hero-sub">A card matching game built in Unity. Flip cards, find matching pairs on a 6×6 grid, track your score and attempts.</p>
+  <div class="btns">
+    <a class="btn-p" href="#play">▶ Play Demo</a>
+    <a class="btn-s" href="https://github.com/b0gdaan/unity-memory-card-game/blob/main/seminar_paper.pdf">📄 Paper (PDF)</a>
+    <a class="btn-s" href="https://github.com/b0gdaan/unity-memory-card-game">⭐ Source</a>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat"><div class="stat-v">6×6</div><div class="stat-l">Grid size</div></div>
+  <div class="stat"><div class="stat-v">18</div><div class="stat-l">Unique pairs</div></div>
+  <div class="stat"><div class="stat-v">C#</div><div class="stat-l">Language</div></div>
+  <div class="stat"><div class="stat-v">Unity</div><div class="stat-l">Engine</div></div>
+</div>
+
+<!-- PLAY -->
+<div class="section" id="play">
+  <div class="section-label">Interactive Demo</div>
+  <div class="section-title">Play Right Here</div>
+  <p class="section-desc">JavaScript port of the Unity game logic. Same rules: find all 18 matching pairs in as few attempts as possible.</p>
+
+  <div class="game-wrap">
+    <div class="score-bar">
+      <div class="score-item"><span id="scoreVal">0</span><small>Score</small></div>
+      <div class="score-item"><span id="attVal">0</span><small>Attempts</small></div>
+      <div class="score-item"><span id="leftVal">18</span><small>Remaining</small></div>
+    </div>
+    <div class="grid" id="gameGrid"></div>
+    <div id="winMsg" style="display:none" class="win-msg">🎉 You won! All pairs found!</div>
+    <button class="restart-btn" onclick="initGame()">↺ New Game</button>
+  </div>
+</div>
+
+<!-- HOW -->
+<div class="section" id="how" style="padding-top:0">
+  <div class="section-label">How It Works</div>
+  <div class="section-title">Game Mechanics</div>
+  <div class="features">
+    <div class="feat"><div class="feat-icon">🔀</div><h3>Fisher-Yates Shuffle</h3><p>18 pairs of emoji icons randomly shuffled each game using the same algorithm as the Unity implementation.</p></div>
+    <div class="feat"><div class="feat-icon">⏱️</div><h3>0.5s Mismatch Delay</h3><p>When two non-matching cards are revealed, they stay visible briefly before flipping back — matching Unity's WaitForSeconds coroutine.</p></div>
+    <div class="feat"><div class="feat-icon">🏆</div><h3>Score + Attempts</h3><p>Score counts matched pairs, attempts count every flip pair. Replicated from Unity's TextMesh counters.</p></div>
+    <div class="feat"><div class="feat-icon">🔄</div><h3>Instant Restart</h3><p>New game reshuffles all cards and resets counters — equivalent to SceneManager.LoadScene in Unity.</p></div>
+  </div>
+</div>
+
+<!-- CODE -->
+<div class="section" id="code" style="padding-top:0">
+  <div class="section-label">Source Code</div>
+  <div class="section-title">Core Algorithm</div>
+  <p class="section-desc">The heart of the game — shuffle, grid generation, and coroutine-based match checking.</p>
+  <div class="code-box">
+    <div class="code-header">
+      <div class="code-dots"><span style="background:#ff5f57"></span><span style="background:#febc2e"></span><span style="background:#28c840"></span></div>
+      <div class="code-title">GameControllerScript.cs</div>
+    </div>
+    <pre><span class="cm">// Fisher-Yates shuffle — same as Array.shuffle in JS</span>
 <span class="kw">private</span> <span class="kw">int</span>[] <span class="fn">Randomiser</span>(<span class="kw">int</span>[] locations) {
     <span class="kw">int</span>[] array = locations.<span class="fn">Clone</span>() <span class="kw">as int</span>[];
-    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="cl">0</span>; i &lt; array.Length; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; array.Length; i++) {
         <span class="kw">int</span> j = Random.<span class="fn">Range</span>(i, array.Length);
         (array[i], array[j]) = (array[j], array[i]);
     }
     <span class="kw">return</span> array;
 }
 
-<span class="cm">// Coroutine-based match checking</span>
+<span class="cm">// Coroutine: wait 0.5s then flip unmatched cards back</span>
 <span class="kw">private</span> IEnumerator <span class="fn">CheckGuessed</span>() {
     <span class="kw">if</span> (firstOpen.spriteId == secondOpen.spriteId) {
         score++;
-        scoreText.text = <span class="cl">"Score: "</span> + score;
+        scoreText.text = <span class="st">"Score: "</span> + score;
     } <span class="kw">else</span> {
-        <span class="kw">yield return new</span> <span class="fn">WaitForSeconds</span>(<span class="cl">0.5f</span>);
+        <span class="kw">yield return new</span> <span class="fn">WaitForSeconds</span>(<span class="num">0.5f</span>);
         firstOpen.<span class="fn">Close</span>();
         secondOpen.<span class="fn">Close</span>();
     }
     attempts++;
-    attemptsText.text = <span class="cl">"Attempts: "</span> + attempts;
+    attemptsText.text = <span class="st">"Attempts: "</span> + attempts;
+    firstOpen = <span class="kw">null</span>;
+    secondOpen = <span class="kw">null</span>;
+}
+
+<span class="cm">// Grid generation: 6×6, position via Xspace/Yspace constants</span>
+<span class="kw">private void</span> <span class="fn">Start</span>() {
+    <span class="kw">int</span>[] locations = { <span class="num">0,0,1,1,2,2,...17,17</span> };
+    locations = <span class="fn">Randomiser</span>(locations);
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i &lt; columns; i++)
+        <span class="kw">for</span> (<span class="kw">int</span> j = <span class="num">0</span>; j &lt; rows; j++)
+            <span class="fn">SpawnCard</span>(i, j, locations[j * columns + i]);
 }</pre>
-    </div>
   </div>
+</div>
 
-  <footer>
-    University of Kragujevac · Virtual Reality Systems · 2024 ·
-    <a href="https://github.com/b0gdaan/unity-memory-card-game">github.com/b0gdaan/unity-memory-card-game</a>
-  </footer>
+<footer>
+  University of Kragujevac · Virtual Reality Systems · 2024 ·
+  <a href="https://github.com/b0gdaan/unity-memory-card-game">github.com/b0gdaan/unity-memory-card-game</a>
+</footer>
 
-  <script>
-    const emojis = ['🌟','🔥','💎','🚀','🌊','🎯','🦊','🌸'];
-    const cards = [0,0,1,1,2,2,3,3].sort(()=>Math.random()-.5);
-    const grid = document.getElementById('demoGrid');
-    let first=null, lock=false;
-    for(let i=0;i<8;i++){
-      const c=document.createElement('div');
-      c.className='card-demo'; c.textContent='?'; c.dataset.id=cards[i];
-      c.onclick=function(){
-        if(lock||this.classList.contains('flipped'))return;
-        this.textContent=emojis[this.dataset.id]; this.classList.add('flipped');
-        if(!first){first=this;}else{
-          lock=true;
-          if(first.dataset.id===this.dataset.id){first=null;lock=false;}
-          else{const a=first,b=this;setTimeout(()=>{a.textContent='?';a.classList.remove('flipped');b.textContent='?';b.classList.remove('flipped');first=null;lock=false;},600);}
-        }
-      };
-      grid.appendChild(c);
+<script>
+const EMOJIS = ['🦊','🐼','🦁','🐸','🦋','🌸','⚡','🎯','🍀','🔥','💎','🌙','🎵','🍕','🚀','🌈','👾','🎃'];
+
+let first = null, lock = false, score = 0, attempts = 0, matched = 0;
+let cards = [];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function initGame() {
+  score = 0; attempts = 0; matched = 0; first = null; lock = false;
+  document.getElementById('scoreVal').textContent = 0;
+  document.getElementById('attVal').textContent = 0;
+  document.getElementById('leftVal').textContent = 18;
+  document.getElementById('winMsg').style.display = 'none';
+
+  const pairs = [];
+  for (let i = 0; i < 18; i++) pairs.push(i, i);
+  cards = shuffle(pairs);
+
+  const grid = document.getElementById('gameGrid');
+  grid.innerHTML = '';
+  cards.forEach((id, idx) => {
+    const el = document.createElement('div');
+    el.className = 'gc';
+    el.innerHTML = `<span class="emoji">${EMOJIS[id]}</span>`;
+    el.dataset.id = id;
+    el.dataset.idx = idx;
+    el.addEventListener('click', () => flip(el));
+    grid.appendChild(el);
+  });
+}
+
+function flip(el) {
+  if (lock || el.classList.contains('matched') || el.classList.contains('revealed') || el === first) return;
+  el.classList.add('revealed');
+
+  if (!first) { first = el; return; }
+
+  const second = el;
+  attempts++;
+  document.getElementById('attVal').textContent = attempts;
+
+  if (first.dataset.id === second.dataset.id) {
+    score++;
+    matched++;
+    document.getElementById('scoreVal').textContent = score;
+    document.getElementById('leftVal').textContent = 18 - matched;
+    first.classList.add('matched');
+    second.classList.add('matched');
+    first.classList.remove('revealed');
+    second.classList.remove('revealed');
+    first = null;
+    if (matched === 18) {
+      setTimeout(() => { document.getElementById('winMsg').style.display = 'block'; }, 200);
     }
-  </script>
+  } else {
+    lock = true;
+    const a = first, b = second;
+    setTimeout(() => {
+      a.classList.add('shake'); b.classList.add('shake');
+      setTimeout(() => {
+        a.classList.remove('revealed','shake');
+        b.classList.remove('revealed','shake');
+        first = null; lock = false;
+      }, 300);
+    }, 500);
+  }
+}
+
+initGame();
+</script>
 </body>
 </html>
