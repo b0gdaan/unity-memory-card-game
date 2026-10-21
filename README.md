@@ -2,13 +2,13 @@
 
 > University seminar paper · Course "Virtual Reality Systems" · University of Kragujevac · 2024
 
-A memory card matching game implemented in Unity (C#). Players flip cards to find matching pairs on a 6×6 grid, with score and attempt tracking.
+Unity C# coursework containing card-flipping, pair-matching and scoring scripts. The repository contains scripts rather than a complete ready-to-open Unity project.
 
 ---
 
 ## Gameplay
 
-- **Grid**: 6 × 6 cards (4 unique image pairs, randomly shuffled)
+- **Grid configuration:** the script declares 6 × 6 positions but provides only 8 card IDs (4 pairs). Align these before running to avoid an index-out-of-range error.
 - **Mechanics**: Click to reveal a card, find its matching pair
 - **Scoring**: Score increases for each matched pair; attempts tracked
 - **Restart**: Reload scene to shuffle and play again
